@@ -25,7 +25,7 @@ ALGORITHM: Final = 'HMAC-SHA256'
 class AuthResult(BaseModel):
     """ 存放签名计算的结果和重要的中间值，以便验证 """
 
-    # 包含 Authorization 和其他必要的 header。可以作为 http 请求的 headers 参数
+    # 包含 Authorization 和其他签名过程中自动生成的 header。可以作为 http 请求的 headers 参数
     # 对于火山引擎，它包含5个 header：Authorization X-Date X-Content-Sha256 Host Content-Type
     sign_result: Dict[str, str]
 
@@ -53,19 +53,20 @@ def make_auth(
     content_type: str,
     body_str: Optional[str] = None,
 ) -> AuthResult:
-    """ 生成 Authorization header 的内容 """
-    x_date, x_date_short = _to_x_date()
-    x_content_sha256 = _hash_sha256(body_str or '')
+    """ 实现签名算法，返回签名结果 """
     canonical_uri = api_info.path
     canonical_query_string = utils.make_canonical_query_string(params)
 
-    headers: HttpHeaders = {
+    x_date, x_date_short = _to_x_date()
+    x_content_sha256 = _hash_sha256(body_str or '')
+
+    headers_to_sign: HttpHeaders = {
         'X-Date': x_date,
         'X-Content-Sha256': x_content_sha256,
         'Host': api_info.host,
         'Content-Type': content_type,
     }
-    ordered_headers = _make_oredered_headers(headers)
+    ordered_headers = _make_oredered_headers(headers_to_sign)
     signed_headers = ';'.join([k for k, _ in ordered_headers])
     # 每一个 canonical_header 都要以 \n 结尾，包括最后一个
     canonical_headers = ''.join([f'{k}:{v}\n' for k, v in ordered_headers])
@@ -96,7 +97,7 @@ def make_auth(
                 f'{ALGORITHM} Credential={aksk.ak}/{credential_scope}, '
                 f'SignedHeaders={signed_headers}, Signature={signature}'
             ),
-            **headers
+            **headers_to_sign,
         },
     )
 
@@ -109,7 +110,7 @@ def _to_x_date() -> Tuple[str, str]:
 
 
 def _make_oredered_headers(headers: HttpHeaders) -> List[Tuple[str, str]]:
-    lowercase_headers = [(k.lower(), v) for k, v in headers.items()]
+    lowercase_headers = [(k.strip().lower(), v.strip()) for k, v in headers.items()]
     return sorted(lowercase_headers, key=lambda x: x[0])
 
 

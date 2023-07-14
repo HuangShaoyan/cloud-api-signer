@@ -57,7 +57,7 @@ class TestMakeCanonicalQueryString:
         assert 'Bar=&Foo=&Page=0' == actual
 
     def test_bce_demo(self):
-        # 参照百度云文档的示例，确保实现符合文档预期
+        # 参照百度智能云文档的示例，确保实现符合文档预期
         # https://cloud.baidu.com/doc/Reference/s/njwvz1yfu#3-canonicalquerystring
         params: HttpParams = {
             'text': None,

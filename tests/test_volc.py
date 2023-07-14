@@ -105,6 +105,17 @@ class TestMakeOrderedHeaders:
             ('foo', '1'),
         ] == actual
 
+    def test_key_and_value_must_trim(self):
+        headers: HttpHeaders = {
+            ' bar ': ' Abc ',
+            'Foo': '1',
+        }
+        actual = _make_oredered_headers(headers)
+        assert [
+            ('bar', 'Abc'),
+            ('foo', '1'),
+        ] == actual
+
     def test_key_must_ordered_after_lowercase(self):
         headers = {
             'foo9': '4',
