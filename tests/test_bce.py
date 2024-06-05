@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from datetime import datetime
 from unittest.mock import Mock
 
@@ -40,16 +38,16 @@ def test_sign_demo_ok():
     )
 
     # 转换为 dict 进行比较，更有利借助 icdiff，快速定位有差异的字段
-    expect = dict(
-        canonical_request='''PUT
+    expect = {
+        'canonical_request': """PUT
 /v1/test/myfolder/readme.txt
 partNumber=9&uploadId=a44cc9bab11cbd156984767aad637851
 host:bj.bcebos.com
-x-bce-date:2015-04-27T08%3A23%3A49Z''',
-        auth_string_prefix='bce-auth-v1/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/2015-04-27T08:23:49Z/1800',
-        signing_key='1d5ce5f464064cbee060330d973218821825ac6952368a482a592e6615aef479',
-        signature='1b8de5a23a56eef657c69f94c621e7acd227d049a4ba577f537d5e5cebf0cf32',
-        sign_result={
+x-bce-date:2015-04-27T08%3A23%3A49Z""",
+        'auth_string_prefix': 'bce-auth-v1/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/2015-04-27T08:23:49Z/1800',
+        'signing_key': '1d5ce5f464064cbee060330d973218821825ac6952368a482a592e6615aef479',
+        'signature': '1b8de5a23a56eef657c69f94c621e7acd227d049a4ba577f537d5e5cebf0cf32',
+        'sign_result': {
             'Authorization': (
                 'bce-auth-v1/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/2015-04-27T08:23:49Z/1800'
                 '/host;x-bce-date'
@@ -58,6 +56,6 @@ x-bce-date:2015-04-27T08%3A23%3A49Z''',
             'host': 'bj.bcebos.com',
             'x-bce-date': '2015-04-27T08:23:49Z',
         },
-    )
+    }
 
-    assert expect == actual.dict()
+    assert expect == actual.model_dump()

@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-""" 百度智能云 API 的签名实现
+"""百度智能云 API 的签名实现
 
 https://cloud.baidu.com/doc/Reference/s/njwvz1yfu
 
@@ -8,10 +7,9 @@ https://cloud.baidu.com/doc/Reference/s/njwvz1yfu
 import hashlib
 import hmac
 from datetime import datetime
-from typing import Dict, List, Set, Tuple
+from typing import Dict, Final, List, Set, Tuple
 
 from pydantic import BaseModel
-from typing_extensions import Final
 
 from cloud_api_signer import utils
 from cloud_api_signer.models import AkSk, HttpHeaders, HttpMethod, HttpParams
@@ -21,7 +19,7 @@ EXPIRATION_PERIOD_IN_SECONDS: Final = 1800
 
 
 class AuthResult(BaseModel):
-    """ 存放签名计算的结果和重要的中间值，以便验证 """
+    """存放签名计算的结果和重要的中间值，以便验证"""
 
     # 包含 Authorization 和其他签名过程中自动生成的 header。可以作为 http 请求的 headers 参数
     # 对于百度智能云，它包含3个 header：Authorization、Host 和 x-bce-date
@@ -45,7 +43,7 @@ def make_auth(
     api_info: ApiInfo,
     params: HttpParams,
 ) -> AuthResult:
-    """ 实现签名算法，返回签名结果 """
+    """实现签名算法，返回签名结果"""
     canonical_uri = utils.uri_encode_except_slash(api_info.path)
     canonical_query_string = utils.make_canonical_query_string(params)
 

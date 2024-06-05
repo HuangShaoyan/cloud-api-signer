@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-""" 火山引擎 API 的签名实现
+"""火山引擎 API 的签名实现
 
 https://www.volcengine.com/docs/6369/67269
 
@@ -8,10 +7,9 @@ https://www.volcengine.com/docs/6369/67269
 import hashlib
 import hmac
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, Final, List, Optional, Tuple
 
 from pydantic import BaseModel
-from typing_extensions import Final
 
 from cloud_api_signer import utils
 from cloud_api_signer.models import AkSk, HttpHeaders, HttpMethod, HttpParams
@@ -23,7 +21,7 @@ ALGORITHM: Final = 'HMAC-SHA256'
 
 
 class AuthResult(BaseModel):
-    """ 存放签名计算的结果和重要的中间值，以便验证 """
+    """存放签名计算的结果和重要的中间值，以便验证"""
 
     # 包含 Authorization 和其他签名过程中自动生成的 header。可以作为 http 请求的 headers 参数
     # 对于火山引擎，它包含5个 header：Authorization X-Date X-Content-Sha256 Host Content-Type
@@ -53,7 +51,7 @@ def make_auth(
     content_type: str,
     body_str: Optional[str] = None,
 ) -> AuthResult:
-    """ 实现签名算法，返回签名结果 """
+    """实现签名算法，返回签名结果"""
     canonical_uri = api_info.path
     canonical_query_string = utils.make_canonical_query_string(params)
 
@@ -121,7 +119,7 @@ def _make_string_to_sign(x_date: str, credential_scope: str, canonical_request: 
 
 
 def _make_signature(aksk: AkSk, x_date_short: str, api_info: ApiInfo, string_to_sign: str) -> str:
-    """ 从 sk 派生出 signing key，然后签名得到 signature """
+    """从 sk 派生出 signing key，然后签名得到 signature"""
     k_date = _hmac_sha256(aksk.sk.encode('utf-8'), x_date_short)
     k_region = _hmac_sha256(k_date, api_info.region)
     k_service = _hmac_sha256(k_region, api_info.service)
@@ -130,10 +128,10 @@ def _make_signature(aksk: AkSk, x_date_short: str, api_info: ApiInfo, string_to_
 
 
 def _hmac_sha256(key: bytes, content: str) -> bytes:
-    """ hmac sha256 算法 """
+    """hmac sha256 算法"""
     return hmac.new(key, content.encode('utf-8'), hashlib.sha256).digest()
 
 
 def _hash_sha256(content: str) -> str:
-    """ sha256 算法 """
+    """sha256 算法"""
     return hashlib.sha256(content.encode('utf-8')).hexdigest()

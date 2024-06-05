@@ -11,17 +11,19 @@
     "files.trimTrailingWhitespace": true,
     "files.insertFinalNewline": true,
     "python.defaultInterpreterPath": "${workspaceFolder}/.venv",
-    "python.formatting.provider": "yapf",
-    "python.linting.pylintEnabled": false,
-    "python.linting.flake8Enabled": true,
-    "python.linting.flake8Args": [
-        "--max-line-length=120",
-    ],
-    "python.linting.mypyEnabled": true,
-    "python.linting.pycodestyleEnabled": false,
+    "ruff.enable": true,
+    "ruff.importStrategy": "fromEnvironment",
+    "ruff.lint.args": ["--config", "${workspaceFolder}/pyproject.toml"],
+    "ruff.format.args": ["--config", "${workspaceFolder}/pyproject.toml"],
+    "mypy.configFile": "./pyproject.toml",
+    "mypy.runUsingActiveInterpreter": true,
     "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff",
         "editor.codeActionsOnSave": {
-            "source.organizeImports": true
+            "source.fixAll.ruff": "always",
+            "source.organizeImports.ruff": "always"
         }
-    }
+    },
+    "ruff.nativeServer": true,
+    "ruff.configurationPreference": "filesystemFirst"
 }

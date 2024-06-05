@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-""" 定义通用的 Model """
+"""定义通用的 Model"""
 
 from typing import Dict, Optional, Union
 

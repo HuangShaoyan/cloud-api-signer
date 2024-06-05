@@ -1,11 +1,15 @@
-# -*- coding: utf-8 -*-
-
 from datetime import datetime
 from unittest.mock import Mock
 
 import pytest
 
-from cloud_api_signer.volc import AkSk, ApiInfo, HttpHeaders, _make_oredered_headers, make_auth
+from cloud_api_signer.volc import (
+    AkSk,
+    ApiInfo,
+    HttpHeaders,
+    _make_oredered_headers,
+    make_auth,
+)
 
 
 @pytest.fixture(autouse=True)
@@ -44,15 +48,15 @@ def test_sign_demo_ok():
         content_type='application/x-www-form-urlencoded; charset=utf-8',
     )
 
-    expect = dict(
-        canonical_query_string='Action=ListUsers&Limit=10&Offset=0&Version=2018-01-01',
-        canonical_headers='''content-type:application/x-www-form-urlencoded; charset=utf-8
+    expect = {
+        'canonical_query_string': 'Action=ListUsers&Limit=10&Offset=0&Version=2018-01-01',
+        'canonical_headers': """content-type:application/x-www-form-urlencoded; charset=utf-8
 host:iam.volcengineapi.com
 x-content-sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
 x-date:20201230T081805Z
-''',  # 注意，结尾处有一个 \n，不能省略
-        signed_headers='content-type;host;x-content-sha256;x-date',
-        canonical_request='''GET
+""",  # 注意，结尾处有一个 \n，不能省略
+        'signed_headers': 'content-type;host;x-content-sha256;x-date',
+        'canonical_request': """GET
 /
 Action=ListUsers&Limit=10&Offset=0&Version=2018-01-01
 content-type:application/x-www-form-urlencoded; charset=utf-8
@@ -61,13 +65,13 @@ x-content-sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b85
 x-date:20201230T081805Z
 
 content-type;host;x-content-sha256;x-date
-e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855''',
-        credential_scope='20201230/cn-north-1/iam/request',
-        string_to_sign='''HMAC-SHA256
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855""",
+        'credential_scope': '20201230/cn-north-1/iam/request',
+        'string_to_sign': """HMAC-SHA256
 20201230T081805Z
 20201230/cn-north-1/iam/request
-3a4d4dee07c3308a52da01bc12d7a83c3705bfa543f51648f46de880bb2a7447''',
-        sign_result={
+3a4d4dee07c3308a52da01bc12d7a83c3705bfa543f51648f46de880bb2a7447""",
+        'sign_result': {
             'Authorization': (
                 'HMAC-SHA256 '
                 'Credential=AKLTMjI2ODVlYzI3ZGY1NGU4ZjhjYWRjMTlmNTM5OTZkYzE/20201230/cn-north-1/iam/request, '
@@ -79,17 +83,16 @@ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855''',
             'Host': 'iam.volcengineapi.com',
             'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
         },
-    )
+    }
 
     # 转换为 dict 进行比较，更有利借助 icdiff，快速定位有差异的字段
-    assert expect == actual.dict()
+    assert expect == actual.model_dump()
 
 
 # 针对容易出错的工具函数，对各种边界条件进行测试
 
 
 class TestMakeOrderedHeaders:
-
     def test_empty(self):
         actual = _make_oredered_headers({})
         assert [] == actual
