@@ -53,7 +53,7 @@ def make_auth(
 ) -> AuthResult:
     """实现签名算法，返回签名结果"""
     canonical_uri = api_info.path
-    canonical_query_string = utils.make_canonical_query_string(params)
+    canonical_query_string = utils.make_canonical_query_string_volc(params)
 
     x_date, x_date_short = _to_x_date()
     x_content_sha256 = _hash_sha256(body_str or '')

@@ -45,7 +45,7 @@ def make_auth(
 ) -> AuthResult:
     """实现签名算法，返回签名结果"""
     canonical_uri = utils.uri_encode_except_slash(api_info.path)
-    canonical_query_string = utils.make_canonical_query_string(params)
+    canonical_query_string = utils.make_canonical_query_string_bce(params)
 
     # 文档中将“生成签名的 UTC 时间”称为 timestamp
     # 但它其实是一个 rfc3339 格式的字符串。这里沿用 timestamp 的命名，以便和文档一致
