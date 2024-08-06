@@ -8,6 +8,7 @@ import hashlib
 import hmac
 from datetime import datetime
 from typing import Dict, Final, List, Set, Tuple
+from urllib.parse import quote
 
 from pydantic import BaseModel
 
@@ -44,7 +45,7 @@ def make_auth(
     params: HttpParams,
 ) -> AuthResult:
     """实现签名算法，返回签名结果"""
-    canonical_uri = utils.uri_encode_except_slash(api_info.path)
+    canonical_uri = quote(api_info.path)
     canonical_query_string = utils.make_canonical_query_string_bce(params)
 
     # 文档中将“生成签名的 UTC 时间”称为 timestamp
@@ -92,8 +93,8 @@ def _to_canonical_headers(headers: HttpHeaders) -> Tuple[str, str]:
     signed_headers: Set[str] = set()
     for k, v in headers.items():
         # 百度智能云要求 key 和 value 都要进行 uri 编码
-        new_k = utils.uri_encode(k)
-        new_v = utils.uri_encode(v.strip())
+        new_k = quote(k, safe='')
+        new_v = quote(v.strip(), safe='')
         result.append(f'{new_k}:{new_v}')
         signed_headers.add(new_k)
 
